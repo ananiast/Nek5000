@@ -771,7 +771,6 @@ C
       END
 C
 c-----------------------------------------------------------------------
-c-----------------------------------------------------------------------
       subroutine plan4_anlst (igeom)
 
 C     Splitting scheme A.G. Tomboulides et al.
@@ -916,10 +915,15 @@ c     -mu*curl(curl(v))
       endif
       call opcolv   (wa1,wa2,wa3,bm1)
 c v \dor (\del rho_s/rho_s) = v \dot \del ln rho = v \dot Hrho^(-1)
-      do e=1,nelv
-        call vdot3  (QvHinv(1,e), vx_e(1,e), vy_e(1,e), vz_e(1,e)
-     $                          ,dlnrx(1,e),dlnry(1,e),dlnrz(1,e),nxyz1)
-      enddo
+
+      call rzero    (QvHinv, ntot1)
+      call add2s2   (QvHinv, vx_e, H_rhosx, ntot1)
+      call add2s2   (QvHinv, vy_e, H_rhosy, ntot1)
+      if(if3d) call add2s2   (QvHinv, vz_e, H_rhosz, ntot1)
+c      do e=1,nelv
+c        call vdot3  (QvHinv(1,e), vx_e(1,e), vy_e(1,e), vz_e(1,e)
+c     $                          ,dlnrx(1,e),dlnry(1,e),dlnrz(1,e),nxyz1)
+c      enddo
       call add2     (QvHinv, QTL, ntot1)
       call opgrad   (ta1,ta2,ta3,QvHinv)
 
