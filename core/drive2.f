@@ -691,7 +691,7 @@ c                - Time-dependent Navier-Stokes calculation (Re>>1).
 c                - Same approximation spaces for pressure and velocity.
 c                - Incompressibe or Weakly compressible (div u .ne. 0).
 
-         call plan4 (igeom)                                           
+         call plan4_anlst (igeom)             ! testing the anelastic XXXX   
          if (igeom.ge.2) call chkptol         ! check pressure tolerance 
          if (igeom.eq.ngeom) then
            if (ifneknekc) then
