@@ -90,8 +90,6 @@ c
          call ophinv       (dv1,dv2,dv3,res1,res2,res3,h1,h2,tolhv,nmxv)
          call opadd2       (vx,vy,vz,dv1,dv2,dv3)
 
-         call printdiverr_anlst
-
       endif
 
       return
@@ -283,6 +281,9 @@ C     Compute the residual for the velocity
 
       NTOT = lx1*ly1*lz1*NELV
       INTYPE = -1
+
+      CALL OPRZERO (RESV1,RESV2,RESV3)
+      CALL OPRZERO (ta1  ,ta2  ,ta3  )
 
       CALL SETHLM  (H1,H2,INTYPE)
 
@@ -904,7 +905,7 @@ c
          npres=icalld
          etime1=dnekclock()
 
-         call crespsp  (respr)
+         call crespsp_anlst  (respr)
          call invers2  (h1,vtrans,ntot1)
          call rzero    (h2,ntot1)
          call ctolspl  (tolspl,respr)
@@ -919,14 +920,11 @@ c
          tpres=tpres+(dnekclock()-etime1)
 
          ! compute velocity
-         if(ifstrs .and. .not.ifaxis) then
-            call bcneutr
-            call cresvsp_weak(res1,res2,res3,h1,h2)
-         else
-            call cresvsp     (res1,res2,res3,h1,h2)
-         endif
+         call cresvsp_anlst(res1,res2,res3,h1,h2)
          call ophinv       (dv1,dv2,dv3,res1,res2,res3,h1,h2,tolhv,nmxv)
          call opadd2       (vx,vy,vz,dv1,dv2,dv3)
+
+         call printdiverr_anlst
 
       endif
 
@@ -992,6 +990,10 @@ c     $                          ,dlnrx(1,e),dlnry(1,e),dlnrz(1,e),nxyz1)
 c      enddo
       call add2     (QvHinv, QTL, ntot1)
       call opgrad   (ta1,ta2,ta3,QvHinv)
+
+c      if(mod(istep,iostep).eq.0 .and. istep.ge.0) then ! this is a test 
+c        call outpost2(vx_e,vy_e,vz_e,QvHinv,t,1,'diq')
+c      endif
 
       if(IFAXIS) then  
          CALL COL2  (ta2, OMASK,ntot1)
@@ -1117,6 +1119,7 @@ C     Compute the residual for the velocity
 
       INCLUDE 'SIZE'
       INCLUDE 'TOTAL'
+      INCLUDE 'ANLST'
 
       real resv1(lx1,ly1,lz1,lelv)
      $   , resv2(lx1,ly1,lz1,lelv)
@@ -1131,6 +1134,9 @@ C     Compute the residual for the velocity
 
       NTOT = lx1*ly1*lz1*NELV
       INTYPE = -1
+
+      CALL OPRZERO (RESV1,RESV2,RESV3)
+      CALL OPRZERO (ta1  ,ta2  ,ta3  )
 
       CALL SETHLM  (H1,H2,INTYPE)
 
